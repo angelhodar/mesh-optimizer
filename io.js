@@ -15,15 +15,14 @@ const getModelPath = (dstPath) => {
   return path.join(dstPath, file);
 };
 
-const getDestinationPath = (id) => {
+export const getDirName = () => {
   const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  return path.join(__dirname, `public/files/${id}`);
+  return path.dirname(__filename);
 }
 
 export const decompress = (file) => {
   const id = file.md5;
-  const dstPath = getDestinationPath(id);
+  const dstPath = path.join(getDirName(), `tmp/${id}`);
 
   const zip = AdmZip(file.data);
   zip.extractAllTo(dstPath, true);
@@ -34,12 +33,5 @@ export const decompress = (file) => {
 };
 
 export const cleanup = (modelPath) => {
-  const parentPath = path.dirname(modelPath);
-  const files = fs.readdirSync(parentPath);
-  files.forEach((f) => {
-    const fullPath = path.join(parentPath, f);
-    const stats = fs.lstatSync(fullPath);
-    if (stats.isDirectory()) fs.rmSync(fullPath, { recursive: true });
-    if (stats.isFile() && f !== "output.glb") fs.unlinkSync(fullPath);
-  });
+  fs.rmSync(path.dirname(modelPath), { recursive: true });
 };
