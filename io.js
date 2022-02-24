@@ -1,43 +1,45 @@
-const fs = require("fs");
-const path = require("path");
-const fsPromises = require("fs").promises;
-const AdmZip = require("adm-zip");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import AdmZip from "adm-zip";
 
-const extensions = [".obj", ".fbx", ".gltf", ".glb", ".stl"];
+let extensions = [".obj", ".fbx", ".gltf", ".glb", ".stl"];
+extensions = extensions.concat(extensions.map((e) => e.toUpperCase()));
 
-const getModelPath = async (parentPath) => {
-  const files = await fsPromises.readdir(parentPath);
+const getModelPath = (dstPath) => {
+  const files = fs.readdirSync(dstPath);
   const file = files.find((f) => {
     const ext = path.extname(f);
     return extensions.includes(ext);
   });
-  return path.join(parentPath, file);
+  return path.join(dstPath, file);
 };
 
-const decompress = async (file) => {
+const getDestinationPath = (id) => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  return path.join(__dirname, `public/files/${id}`);
+}
+
+export const decompress = (file) => {
   const id = file.md5;
-  const parentPath = `${__dirname}/public/files/${id}`;
-  const uploadPath = `${parentPath}/${file.name}`;
+  const dstPath = getDestinationPath(id);
 
-  if (!fs.existsSync(parentPath)) fs.mkdirSync(parentPath);
+  const zip = AdmZip(file.data);
+  zip.extractAllTo(dstPath, true);
 
-  await fsPromises.writeFile(uploadPath, file.data);
-
-  // Check if constructor accepts file.data to avoid reading from disk
-  const zip = AdmZip(uploadPath);
-  zip.extractAllTo(parentPath);
-
-  const filePath = await getModelPath(parentPath);
+  const filePath = getModelPath(dstPath);
 
   return { id, path: filePath };
 };
 
-const cleanup = async (modelPath) => {
+export const cleanup = (modelPath) => {
   const parentPath = path.dirname(modelPath);
-  const files = await fsPromises.readdir(parentPath);
+  const files = fs.readdirSync(parentPath);
   files.forEach((f) => {
-    if (f !== "output.glb") fs.unlinkSync(path.join(parentPath, f));
+    const fullPath = path.join(parentPath, f);
+    const stats = fs.lstatSync(fullPath);
+    if (stats.isDirectory()) fs.rmSync(fullPath, { recursive: true });
+    if (stats.isFile() && f !== "output.glb") fs.unlinkSync(fullPath);
   });
 };
-
-module.exports = { decompress, cleanup };

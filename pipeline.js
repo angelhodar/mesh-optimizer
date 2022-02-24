@@ -1,13 +1,14 @@
-const util = require("util");
-const path = require("path");
-const exec = util.promisify(require("child_process").exec);
-const { NodeIO } = require("@gltf-transform/core");
-const { prune, textureResize } = require("@gltf-transform/functions");
-const { DracoMeshCompression } = require("@gltf-transform/extensions");
-const draco3d = require("draco3dgltf");
+import path from "path";
+import util from "util";
+import { exec } from "child_process";
+import { NodeIO } from "@gltf-transform/core";
+import { prune, textureResize } from "@gltf-transform/functions";
+import { DracoMeshCompression } from "@gltf-transform/extensions";
+import draco3d from "draco3dgltf";
 
 const convert = async (modelPath, ratio = 0.7) => {
-  await exec(`blender -b -P 2gltf.py -- "${modelPath}" ${ratio}`);
+  const execAsync = util.promisify(exec);
+  await execAsync(`blender -b -P 2gltf.py -- "${modelPath}" ${ratio}`);
 }
 
 const optimize = async (modelPath) => {
@@ -34,4 +35,4 @@ const pipeline = async (path) => {
   await optimize(path);
 }
 
-module.exports = pipeline;
+export default pipeline;

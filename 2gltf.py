@@ -19,6 +19,8 @@ PS: this tool does not try to preserve the integrity of the mesh so be carefull 
 the ratio (try not choose a very low ratio)
 Enjoy!
 '''
+
+modifierName = 'DecimateMod'
  
 modelPath = sys.argv[5]
 decimateRatio = float(sys.argv[6])
@@ -28,43 +30,50 @@ directory = os.path.dirname(modelPath)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
-def log(msg):
-    print("{}".format(msg))
-
 def decimate(ratio):
-    modifierName='DecimateMod'
     meshes = [obj for obj in bpy.data.objects if obj.type == "MESH"]
 
-    log("{} meshes".format(len(meshes)))
+    print(f'Model has {len(meshes)} meshes...')
 
     for i, obj in enumerate(meshes):
         bpy.context.view_layer.objects.active = obj
-        log("{}/{} meshes, name: {}".format(i, len(meshes), obj.name))
-        log("{} has {} verts, {} edges, {} polys".format(obj.name, len(obj.data.vertices), len(obj.data.edges), len(obj.data.polygons)))
-        modifier = obj.modifiers.new(modifierName,'DECIMATE')
+        previous_verts = len(obj.data.vertices)
+        print(f'Processing mesh {i}/{len(meshes)}')
+        modifier = obj.modifiers.new(modifierName, 'DECIMATE')
         modifier.ratio = ratio
         modifier.use_collapse_triangulate = True
         bpy.ops.object.modifier_apply(modifier=modifierName)
-        log("{} has {} verts, {} edges, {} polys after decimation".format(obj.name, len(obj.data.vertices), len(obj.data.edges), len(obj.data.polygons)))
+        after_verts = len(obj.data.vertices)
+        print(f'Reduced mesh {i}/{len(meshes)} verts from {previous_verts} verts to {after_verts}')
 
 
-if extension == ".blend":
-    bpy.ops.wm.open_mainfile(filepath=modelPath) 
+def import_model():
+    if extension == ".blend":
+        bpy.ops.wm.open_mainfile(filepath=modelPath) 
 
-if extension == ".fbx":
-    bpy.ops.import_scene.fbx(filepath=modelPath)    
+    if extension == ".fbx":
+        bpy.ops.import_scene.fbx(filepath=modelPath)    
 
-if extension == ".obj":
-    bpy.ops.import_scene.obj(filepath=modelPath)    
+    if extension == ".obj":
+        bpy.ops.import_scene.obj(filepath=modelPath)    
 
-if extension == ".ply":
-    bpy.ops.import_mesh.ply(filepath=modelPath)    
+    if extension == ".ply":
+        bpy.ops.import_mesh.ply(filepath=modelPath)
 
-if extension == ".stl":
-    bpy.ops.import_mesh.stl(filepath=modelPath)
+    if extension == ".gltf" or extension == ".glb":
+        bpy.ops.import_mesh.gltf(filepath=modelPath)     
 
+    if extension == ".stl":
+        bpy.ops.import_mesh.stl(filepath=modelPath)
+
+def export_model():
+    export_file = directory + "/" + filename + ".gltf"
+    print("Writing: '" + export_file + "'")
+    bpy.ops.export_scene.gltf(filepath=export_file)
+
+
+import_model()
 decimate(decimateRatio)
+export_model()
 
-export_file = directory + "/" + filename + ".gltf"
-print("Writing: '" + export_file + "'")
-bpy.ops.export_scene.gltf(filepath=export_file)
+
