@@ -1,6 +1,6 @@
 # Mesh Optimizer
 
-![Blender and Docker](./cover.png)
+![Blender and Docker](./docs/cover.png)
 
 ## Introduction
 

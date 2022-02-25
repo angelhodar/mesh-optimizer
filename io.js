@@ -6,6 +6,10 @@ import AdmZip from "adm-zip";
 let extensions = [".obj", ".fbx", ".gltf", ".glb", ".stl"];
 extensions = extensions.concat(extensions.map((e) => e.toUpperCase()));
 
+export const getSwaggerSpecs = () => {
+  return JSON.parse(fs.readFileSync("./docs/swagger.json"));
+}
+
 const getModelPath = (dstPath) => {
   const files = fs.readdirSync(dstPath);
   const file = files.find((f) => {

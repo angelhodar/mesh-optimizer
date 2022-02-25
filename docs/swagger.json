@@ -1,0 +1,150 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MeshOptimizer",
+        "description": "API for the mesh optimizer microservice",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+    "paths": {
+        "/": {
+            "post": {
+                "summary": "Process a new model upload",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MeshRequest"
+                            },
+                            "examples": {
+                                "MeshRequest": {
+                                    "$ref": "#/components/examples/MeshRequest"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "$ref": "#/components/responses/MeshResponse"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ValidationError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Deletes a model given its url",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Url"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "The model was deleted successfully"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ValidationError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "MeshRequest": {
+                "type": "object",
+                "required": [
+                    "file"
+                ],
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "decimateRatio": {
+                        "type": "float"
+                    },
+                    "draco": {
+                        "type": "boolean"
+                    },
+                    "textureSize": {
+                        "type": "int"
+                    }
+                }
+            },
+            "MeshResponse": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "responses": {
+            "MeshResponse": {
+                "description": "The url of the uploaded mesh",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/MeshResponse"
+                        },
+                        "examples": {
+                            "MeshResponse": {
+                                "$ref": "#/components/examples/MeshResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "ValidationError": {
+                "description": "A validation error thrown while validating input data"
+            },
+            "NotFoundError": {
+                "description": "Thrown when a resource is not found"
+            },
+            "InternalServerError": {
+                "description": "Thrown when an unexpected error has occurred on server"
+            }
+        },
+        "parameters": {
+            "Url": {
+                "name": "url",
+                "in": "query",
+                "description": "The unique url for the mesh to delete",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }
+        },
+        "examples": {
+            "MeshRequest": {
+                "value": {
+                    "file": "selected file...",
+                    "decimateRatio": 0.8,
+                    "draco": false,
+                    "textureSize": 1024
+                }
+            },
+            "MeshResponse": {
+                "value": {
+                    "url": "https://somestorageserver.com/as87dyas7dyassd.glb"
+                }
+            }
+        }
+    }
+}

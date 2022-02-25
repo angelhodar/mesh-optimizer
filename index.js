@@ -1,16 +1,17 @@
 import "dotenv/config";
 import express from "express";
 import fileUpload from "express-fileupload";
-import { decompress, cleanup } from "./io.js";
+import swaggerUI from "swagger-ui-express";
+import { decompress, getSwaggerSpecs, cleanup } from "./io.js";
 import pipeline from "./pipeline.js";
 import { getUploadProvider, getDeleteProvider } from "./storage/index.js";
 
 const app = express();
-
 const port = process.env.PORT || 8000;
 
 app.use(express.static("public"));
 app.use(fileUpload());
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(getSwaggerSpecs()));
 
 const hasValidFile = (uploadData) => {
   return (
@@ -40,7 +41,7 @@ app.post("/", async function (req, res) {
   // Remove all temporal data
   cleanup(path);
   // Return the file md5 hash to be accessed later
-  res.json({ url });
+  res.status(201).json({ url });
 });
 
 app.delete("/", async function (req, res) {
