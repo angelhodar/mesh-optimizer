@@ -8,7 +8,8 @@ import draco3d from "draco3dgltf";
 
 const convert = async (modelPath, { decimateRatio = 0.7 }) => {
   const execAsync = util.promisify(exec);
-  await execAsync(`blender -b -P 2gltf.py -- "${modelPath}" ${decimateRatio}`);
+  const scriptPath = path.join(process.cwd(), 'scripts/2gltf.py')
+  await execAsync(`blender -b -P ${scriptPath} -- "${modelPath}" ${decimateRatio}`);
 };
 
 const optimize = async (

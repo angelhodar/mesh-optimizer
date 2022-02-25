@@ -28,9 +28,9 @@ const createEntry = async ({ fileSize, fileStream, fileName }) => {
     }),
   });
 
-  const { entryid: entry } = await entryRes.json();
+  const { entryid } = await entryRes.json();
 
-  return entry;
+  return entryid;
 };
 
 const uploadEntryData = async ({ fileSize, fileStream, fileName, entry }) => {
@@ -82,7 +82,7 @@ const unityProvider = {
     const { size: fileSize } = fs.statSync(file);
     const fileName = path.basename(file);
 
-    const { entry } = await createEntry({ fileStream, fileSize, fileName });
+    const entry = await createEntry({ fileStream, fileSize, fileName });
     const success = await uploadEntryData({ fileStream, fileSize, fileName, entry });
 
     if (success) return await getUrl({ entry });

@@ -4,7 +4,7 @@ import fileUpload from "express-fileupload";
 import swaggerUI from "swagger-ui-express";
 import { decompress, getSwaggerSpecs, cleanup } from "./io.js";
 import pipeline from "./pipeline.js";
-import { getUploadProvider, getDeleteProvider } from "./storage/index.js";
+import { getUploadProvider, getDeleteProvider } from "./storage.js";
 
 const app = express();
 const port = process.env.PORT || 8000;

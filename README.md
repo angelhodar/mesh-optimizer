@@ -40,6 +40,10 @@ The environment variables you can configure are listed in the section below.
 
 > Note: The value of the variable CONTAINER_PORT listed above should be the same as the variable PORT you define in .env file
 
+## API Endpoints
+
+The project comes with Swagger UI where you can test upload/remove in */docs*
+
 ## Configuration
 
 The container is configurated via environment variables:
