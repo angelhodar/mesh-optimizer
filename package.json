@@ -1,11 +1,12 @@
 {
-  "name": "docker-3d-fastapi",
+  "name": "mesh-optimizer",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "prepare": "husky install"
   },
   "type": "module",
   "keywords": [],
@@ -26,6 +27,7 @@
     "node-fetch": "^3.2.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "husky": "^7.0.0"
   }
 }
