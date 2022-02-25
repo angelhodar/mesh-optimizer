@@ -71,8 +71,7 @@
                 ],
                 "properties": {
                     "file": {
-                        "type": "string",
-                        "format": "binary"
+                        "type": "file"
                     },
                     "decimateRatio": {
                         "type": "float"

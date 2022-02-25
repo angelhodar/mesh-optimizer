@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import AdmZip from "adm-zip";
 
-let extensions = [".obj", ".fbx", ".gltf", ".glb", ".stl"];
+let extensions = [".obj", ".fbx", ".dae", ".gltf", ".glb", ".stl"];
 extensions = extensions.concat(extensions.map((e) => e.toUpperCase()));
 
 export const getSwaggerSpecs = () => {

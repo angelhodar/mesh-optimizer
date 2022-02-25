@@ -18,7 +18,8 @@ const hasValidFile = (uploadData) => {
     uploadData &&
     Object.keys(uploadData).length > 0 &&
     uploadData.file &&
-    uploadData.file.mimetype === "application/zip"
+    (uploadData.file.mimetype === "application/zip" ||
+      uploadData.file.mimetype === "application/x-zip-compressed")
   );
 };
 
