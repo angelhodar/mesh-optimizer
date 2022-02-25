@@ -35,7 +35,7 @@ const createEntry = async ({ fileSize, fileStream, fileName }) => {
 
 const uploadEntryData = async ({ fileSize, fileStream, fileName, entry }) => {
   const contentURL = `${managmentUrl}/${entry}/content/`;
-  const fileName = fileName.split(".")[0];
+  const name = fileName.split(".")[0];
 
   return await new Promise((resolve, reject) => {
     const upload = new tus.Upload(fileStream, {
@@ -43,7 +43,7 @@ const uploadEntryData = async ({ fileSize, fileStream, fileName, entry }) => {
       retryDelays: [0, 3000, 5000, 10000, 20000],
       uploadSize: fileSize,
       metadata: {
-        filename: fileName,
+        filename: name,
         filetype: "model/gltf-binary",
       },
       headers: {
