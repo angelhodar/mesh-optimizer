@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import fileUpload from "express-fileupload";
 import swaggerUI from "swagger-ui-express";
-import { decompress, getSwaggerSpecs, cleanup } from "./io.js";
+import { decompress, getSwaggerSpecs } from "./io.js";
 import pipeline from "./pipeline.js";
 import { getUploadProvider, getDeleteProvider } from "./storage.js";
 
@@ -29,18 +29,15 @@ app.post("/", async function (req, res) {
   // Get file as .zip and any other parameters
   const { file } = req.files;
   // Decompress zip to folder
-  const { id, path } = decompress(file);
+  const { modelPath, cleanup } = decompress(file);
   // Convert to glb with Blender and postprocess with optimizations
-  const resultFile = await pipeline(path, { ...req.body, id });
-  // File upload to provider
+  const resultFile = await pipeline(modelPath, { ...req.body, id: file.md5 });
+  // Get provider used depending on env settings
   const { upload } = getUploadProvider();
-  const url = await upload({
-    file: resultFile,
-    protocol: req.protocol,
-    hostname: req.hostname,
-  });
+  // Get final file url
+  const url = await upload({ file: resultFile, hostname: req.hostname });
   // Remove all temporal data
-  cleanup(path);
+  cleanup();
   // Return the file md5 hash to be accessed later
   res.status(201).json({ url });
 });
