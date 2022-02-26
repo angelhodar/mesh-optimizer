@@ -13,7 +13,7 @@ directory = os.path.dirname(modelPath)
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 def decimate(ratio):
-    meshes = [obj for obj in bpy.data.objects if obj.type == "MESH"]
+    meshes = [obj for obj in bpy.data.objects if obj.type == "MESH" and not obj.data.shape_keys]
 
     print(f'Model has {len(meshes)} meshes...')
 
@@ -33,23 +33,23 @@ def import_model():
     if extension == ".blend":
         bpy.ops.wm.open_mainfile(filepath=modelPath) 
 
-    if extension == ".fbx":
-        bpy.ops.import_scene.fbx(filepath=modelPath)
-
     if extension == ".dae":
         bpy.ops.wm.collada_import(filepath = modelPath, 
                       auto_connect = True, 
                       find_chains = True, 
                       fix_orientation = True) 
 
+    if extension == ".fbx":
+        bpy.ops.import_scene.fbx(filepath=modelPath)
+
     if extension == ".obj":
-        bpy.ops.import_scene.obj(filepath=modelPath)    
+        bpy.ops.import_scene.obj(filepath=modelPath)  
+
+    if extension == ".gltf" or extension == ".glb":
+        bpy.ops.import_scene.gltf(filepath=modelPath)      
 
     if extension == ".ply":
         bpy.ops.import_mesh.ply(filepath=modelPath)
-
-    if extension == ".gltf" or extension == ".glb":
-        bpy.ops.import_mesh.gltf(filepath=modelPath)     
 
     if extension == ".stl":
         bpy.ops.import_mesh.stl(filepath=modelPath)
