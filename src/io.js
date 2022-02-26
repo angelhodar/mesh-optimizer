@@ -1,5 +1,4 @@
 import fs from "fs";
-import tmp from "tmp";
 import path from "path";
 import AdmZip from "adm-zip";
 
@@ -11,8 +10,8 @@ export const getSwaggerSpecs = () => {
   return JSON.parse(fs.readFileSync(specsPath));
 }
 
-const getModelPath = (tmpPath) => {
-  const files = fs.readdirSync(tmpPath);
+const getModelPath = (dstPath) => {
+  const files = fs.readdirSync(dstPath);
   const file = files.find((f) => {
     const ext = path.extname(f);
     return extensions.includes(ext);
@@ -21,12 +20,17 @@ const getModelPath = (tmpPath) => {
 };
 
 export const decompress = (file) => {
-  const tmpPath = tmp.dirSync();
+  const id = file.md5;
+  const dstPath = path.join(process.cwd(), `tmp/${id}`);
 
   const zip = AdmZip(file.data);
-  zip.extractAllTo(tmpPath.name, true);
+  zip.extractAllTo(dstPath, true);
 
-  const modelPath = getModelPath(tmpPath);
+  const filePath = getModelPath(dstPath);
 
-  return { modelPath, cleanup: tmpPath.removeCallback };
+  return { id, path: filePath };
+};
+
+export const cleanup = (modelPath) => {
+  fs.rmSync(path.dirname(modelPath), { recursive: true });
 };
