@@ -1,4 +1,4 @@
-FROM nytimes/blender:3.0-cpu-ubuntu18.04
+FROM nytimes/blender:3.1-cpu-ubuntu18.04
 
 # Install Node
 RUN apt-get update
