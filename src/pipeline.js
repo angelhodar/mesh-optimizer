@@ -1,10 +1,10 @@
-import path from "path";
-import util from "util";
-import { exec } from "child_process";
-import { NodeIO } from "@gltf-transform/core";
-import { prune, textureResize } from "@gltf-transform/functions";
-import { DracoMeshCompression } from "@gltf-transform/extensions";
-import draco3d from "draco3dgltf";
+const path = require("path");
+const util = require("util");
+const { exec } = require("child_process");
+const { NodeIO } = require("@gltf-transform/core");
+const { prune, textureResize } = require("@gltf-transform/functions");
+const { DracoMeshCompression } = require("@gltf-transform/extensions");
+const draco3d = require("draco3dgltf");
 
 const convert = async (modelPath, { decimateRatio = 0.7 }) => {
   const execAsync = util.promisify(exec);
@@ -42,4 +42,4 @@ const pipeline = async (path, params) => {
   return await optimize(path, params);
 };
 
-export default pipeline;
+module.exports = pipeline;

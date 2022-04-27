@@ -1,15 +1,9 @@
-import fs from "fs";
-import tmp from "tmp";
-import path from "path";
-import AdmZip from "adm-zip";
+const fs = require("fs");
+const path = require("path");
+const AdmZip = require("adm-zip");
 
 let extensions = [".obj", ".fbx", ".dae", ".gltf", ".glb", ".stl"];
 extensions = extensions.concat(extensions.map((e) => e.toUpperCase()));
-
-export const getSwaggerSpecs = () => {
-  const specsPath = path.join(process.cwd(), "docs/swagger.json");
-  return JSON.parse(fs.readFileSync(specsPath));
-}
 
 const getModelPath = (tmpPath) => {
   const files = fs.readdirSync(tmpPath);
@@ -20,13 +14,16 @@ const getModelPath = (tmpPath) => {
   return path.join(tmpPath, file);
 };
 
-export const decompress = (file) => {
-  const { name: tmpPath, removeCallback } = tmp.dirSync({ unsafeCleanup: true });
+const decompress = (file) => {
+  const tmpPath = "/tmp"
 
   const zip = AdmZip(file.data);
   zip.extractAllTo(tmpPath, true);
 
   const modelPath = getModelPath(tmpPath);
-
-  return { modelPath, cleanup: removeCallback }
+  const parameters = fs.readFileSync(path.join(tmpPath, "parameters.json"));
+  
+  return { modelPath, parameters: JSON.parse(parameters) };
 };
+
+module.exports = { decompress };
