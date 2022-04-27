@@ -1,0 +1,3 @@
+name: model-optimizer
+runtime: nodejs
+description: Infrastructure for the model optimizer project
