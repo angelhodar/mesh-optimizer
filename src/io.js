@@ -17,13 +17,21 @@ const getModelPath = (tmpPath) => {
 const decompress = (file) => {
   const tmpPath = "/tmp"
 
-  const zip = AdmZip(file.data);
+  const zip = AdmZip(file);
   zip.extractAllTo(tmpPath, true);
 
   const modelPath = getModelPath(tmpPath);
-  const parameters = fs.readFileSync(path.join(tmpPath, "parameters.json"));
   
-  return { modelPath, parameters: JSON.parse(parameters) };
+  return modelPath
 };
 
-module.exports = { decompress };
+const streamToString = (stream) => {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+  });
+};
+
+module.exports = { decompress, streamToString };

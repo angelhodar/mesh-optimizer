@@ -19,9 +19,10 @@ RUN npm install aws-lambda-ric
 COPY . ./
 
 # Download and run chmod
-ADD aws-lambda-rie /usr/local/bin/aws-lambda-rie
+ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/v1.5/aws-lambda-rie /usr/local/bin/aws-lambda-rie
+RUN chmod 777 /usr/local/bin/aws-lambda-rie
 ADD scripts/entry_script.sh /entry_script.sh
 
-ENTRYPOINT ["/entry_script.sh"]
+ENTRYPOINT [ "/entry_script.sh" ]
 
-CMD ["app.handler"]
+CMD [ "src/index.handler" ]
