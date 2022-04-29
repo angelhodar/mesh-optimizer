@@ -22,6 +22,7 @@ COPY . ./
 ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/v1.5/aws-lambda-rie /usr/local/bin/aws-lambda-rie
 RUN chmod 777 /usr/local/bin/aws-lambda-rie
 ADD scripts/entry_script.sh /entry_script.sh
+RUN chmod 777 /entry_script.sh
 
 ENTRYPOINT [ "/entry_script.sh" ]
 
