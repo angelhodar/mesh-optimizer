@@ -16,7 +16,9 @@ const role = new aws.iam.Role("modelOptimizerRole", {
 const lambdaS3Access = new aws.iam.RolePolicyAttachment("lambdaFullAccess", {
   role: role.name,
   policyArn: aws.iam.ManagedPolicy.AWSLambdaExecute,
-});
+})
+
+// Add role AWSLambdaBasicExecutionRole
 
 const optimizer = new aws.lambda.Function("optimizer", {
   packageType: "Image",
@@ -25,7 +27,7 @@ const optimizer = new aws.lambda.Function("optimizer", {
   timeout: 300,
 });
 
-bucket.onObjectCreated("onNewZip", optimizer, { filterSuffix: ".zip" });
+bucket.onObjectCreated("onNewModel", optimizer, { filterSuffix: ".zip" });
 
 // Export the bucket name.
 export const bucketName = bucket.id;
