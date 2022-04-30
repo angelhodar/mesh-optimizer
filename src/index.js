@@ -37,7 +37,8 @@ exports.handler = async (event) => {
     const headCommand = new HeadObjectCommand(params);
     const { Metadata: parameters } = await s3.send(headCommand);
     // Optimize the model (Blender + gltf-transform)
-    const resultPath = await pipeline(modelPath, { ...parameters });
+    const resultPath = await pipeline(modelPath, { id: "test", ...parameters });
+    console.log(resultPath);
     // Prepare data to upload
     const resultFileName = path.basename(resultPath);
     const optimizedModel = fs.createReadStream(resultPath);

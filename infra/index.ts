@@ -13,38 +13,17 @@ const role = new aws.iam.Role("modelOptimizerRole", {
   }),
 });
 
-const lambdaS3Access = new aws.iam.RolePolicyAttachment("lambdaFullAccess", {
+const attachment = new aws.iam.RolePolicyAttachment("lambdaFullAccess", {
   role: role.name,
   policyArn: aws.iam.ManagedPolicy.AWSLambdaExecute,
-})
-
-// Add role AWSLambdaBasicExecutionRole
+});
 
 const optimizer = new aws.lambda.Function("optimizer", {
   packageType: "Image",
   imageUri: image.imageValue,
   role: role.arn,
   timeout: 300,
-});
+  memorySize: 1536,
+}, { dependsOn: [ attachment ]});
 
 bucket.onObjectCreated("onNewModel", optimizer, { filterSuffix: ".zip" });
-
-// Export the bucket name.
-export const bucketName = bucket.id;
-
-const logger = new aws.lambda.CallbackFunction<aws.s3.BucketEvent, void>(
-  "onModelOptimized",
-  {
-    callback: async (bucketArgs) => {
-      if (!bucketArgs.Records) return;
-
-      for (const record of bucketArgs.Records) {
-        console.log(`Model optimizer ${record.s3.object.key}`);
-      }
-    },
-    policies: [aws.iam.ManagedPolicy.AWSLambdaExecute],
-  }
-);
-
-// When a new model is optimized, log a message.
-bucket.onObjectCreated("onModelOptimized", logger, { filterSuffix: ".gdb" });
